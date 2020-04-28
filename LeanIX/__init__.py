@@ -10,6 +10,7 @@ class LeanIX:
 
         self.auth()
         self.graph = Graph(self)
+        self.factsheets = FactSheets(self)
 
     def auth(self):
         """Authenticate to LeanIX using the API token in the class"""
@@ -66,7 +67,7 @@ class Graph:
     
     def execGraphQLTrimmed(self,query,variables={}):
         """Send the GQL to the endpoint, convert to dict, trim the "edges" and "node" tags"""
-        return self.trimResults(self.execGraphQLParsed(query,variables={}))
+        return self.trimResults(self.execGraphQLParsed(query,variables=variables))
 
     def trimResults(self,results):
         """Trims out all the "node" and "edge" keys from a graph resultset to make it a bit easier to work with the results.
@@ -89,5 +90,37 @@ class Graph:
         else:
             return results
 
-       
+class FactSheets:
+    def __init__(self,lix):
+        """ Pass in the parent LeanIX object to have access to all of the methods and data
+        """
+        self.lix = lix
+    
+    def getByContainsName(self,name):
+        """ Gets FactSheets by name, does a "contains" query of all factsheets """
+
+        gquery = """query ($filter: FilterInput) 
+                        {
+                            allFactSheets(filter: $filter) 
+                            {
+                                totalCount
+                                edges 
+                                {
+                                    node {
+                                            id
+                                            displayName
+                                            name
+                                            type
+                                        }
+                                }
+                            }
+                        }"""
+                        
+        gvars = {
+            "filter": {"quickSearch": name}
+        }
+
+        return self.lix.graph.execGraphQLTrimmed(gquery,gvars)
+
+
 

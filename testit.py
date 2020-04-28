@@ -26,7 +26,7 @@ gql = """
   }
 }"""
 
-result = lix.graph.execGraphQLTrimmed(gql)
+result = lix.factsheets.getByContainsName("deployment")
 
 a=1
 
