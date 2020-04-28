@@ -122,5 +122,24 @@ class FactSheets:
 
         return self.lix.graph.execGraphQLTrimmed(gquery,gvars)
 
+    def getFactSheetByNameAndType(self,name,fstype):
+        """ Returns the factsheet given a type and name """
+        factsheets = self.getByContainsName(name)['data']['allFactSheets']
+
+        for fs in factsheets:
+            if fs['type'].lower() == fstype.lower():
+                if fs['name'].lower() == name.lower():
+                    return fs
+        return None        
+
+    def getIdByNameAndType(self,name,fstype):
+        """ Returns the factsheet ID given a type and name """
+        fs = self.getFactSheetByNameAndType(name,fstype)
+        if fs:
+            return fs['id']
+        else:
+            return None
+
+
 
 

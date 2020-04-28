@@ -26,7 +26,6 @@ gql = """
   }
 }"""
 
-result = lix.factsheets.getByContainsName("deployment")
-
+result = lix.factsheets.getIdByNameAndType("LeanIX","Application")
 a=1
 
