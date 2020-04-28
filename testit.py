@@ -26,6 +26,7 @@ gql = """
   }
 }"""
 
-result = lix.factsheets.getFactSheetByNameAndType("LeanIX","Application")
+result = lix.factsheets.create("newprovider","Provider",{"/alias":"np"},validateOnly=True)
+
 a=1
 
