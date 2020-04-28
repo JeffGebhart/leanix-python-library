@@ -26,7 +26,8 @@ gql = """
   }
 }"""
 
-result = lix.factsheets.create("newprovider","Provider",{"/alias":"np"},validateOnly=True)
-
+fsid = lix.factsheets.getIdByNameAndType(name="Test Process",fstype="Process")
+result = lix.factsheets.delete(fsid=fsid,comment="TestDelete",validateOnly=True)
+fs = lix.factsheets.getFactSheetByNameAndType(name="Test Process",fstype="Process")
 a=1
 

@@ -10,6 +10,38 @@ class FactSheets:
     def __repr__(self):
         return f"Factsheets wrapper for {self.lix}"
 
+    def delete(self,fsid,comment="No Comment Provided",validateOnly=False):
+        gql = """mutation ($fsid: ID!,$patches:[Patch]!,$validateOnly: Boolean!,$comment: String!)
+                    {
+                        updateFactSheet(id:$fsid, patches:$patches,validateOnly:$validateOnly,comment:$comment)
+                        {
+                            factSheet
+                            {
+                                name
+                                id
+                                status
+                            }
+                        }
+                    }"""
+
+        gvars = {
+                    "fsid": fsid,
+                    "patches": [
+                        {
+                            "op":"add",
+                            "path": "/status",
+                            "value": "ARCHIVED"
+                        }
+                    ]
+                    ,"validateOnly": validateOnly,
+                    "comment": comment
+                }
+        delfs = self.lix.graph.execGraphQLTrimmed(gql,gvars)
+        return delfs
+
+        
+        
+
     def create(self,name,fstype,attributes={},validateOnly=False):
         """ Creates a fact sheet based on name and type, and applies the Key/Value pairs in attributes to it """
 
@@ -64,6 +96,7 @@ class FactSheets:
                                             displayName
                                             name
                                             type
+                                            status
                                         }
                                 }
                             }
