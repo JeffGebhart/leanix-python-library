@@ -27,7 +27,8 @@ gql = """
 }"""
 
 fsid = lix.factsheets.getIdByNameAndType(name="Test Process",fstype="Process")
-result = lix.factsheets.delete(fsid=fsid,comment="TestDelete",validateOnly=True)
+
+result = lix.factsheets.update(fsid=fsid,comment="TestUpdate",attributes={"/alias":{"value":"TestAlias"}},validateOnly=False)
 fs = lix.factsheets.getFactSheetByNameAndType(name="Test Process",fstype="Process")
 a=1
 
