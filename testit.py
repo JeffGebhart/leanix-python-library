@@ -26,6 +26,6 @@ gql = """
   }
 }"""
 
-result = lix.factsheets.getIdByNameAndType("LeanIX","Application")
+result = lix.factsheets.getFactSheetByNameAndType("LeanIX","Application")
 a=1
 
