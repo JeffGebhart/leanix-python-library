@@ -9,9 +9,9 @@ setuptools.setup(
   description='Functionality to support the development with LeanIX REST APIs',
   long_description=long_description,
   long_description_content_type="text/markdown",
-  url='https://github.com/leanix-public/leanix-python-library',
-  author='Christoph for LeanIX',
-  author_email='christoph.walpert@leanix.net',
+  url='https://github.com/JeffGebhart/leanix-python-library',
+  author='Jeff Gebhart',
+  author_email='jeff@gebhart.ca',
   classifiers=[
     'Development Status :: 1 - Planning',
     'Intended Audience :: Developers',
@@ -21,5 +21,5 @@ setuptools.setup(
   #Packages that are included in the project
   packages=[],
   #Package requirements that 
-  install_requires=['json','pandas','requests','base64','time']
+  install_requires=['json','requests','base64','time']
 )
