@@ -22,6 +22,7 @@ factsheets: A class for working with factsheets
 -getIdByNameAndType(name*,fstype*) - returns a single id as a string from query
 
 TODO:
+------
 LOTS!
 
 Useage
