@@ -7,12 +7,14 @@ Currently very basic functionality.
 
 LeanIX Class will do your authentication and token management.  It will return an object with a number of subclasses:
 
-graph: A class for managing GraphQL stuff.
+#graph: A class for managing GraphQL stuff.
+```
 -execGraphQL(query,variables) - Executes GraphQL, returns raw HTTP Response object
 -execGraphQLParsed(query,variables) - same as above, but returns a dict with the JSON of the response parsed out
 -execGraphQLTrimmed(query,variables) - Same, as parsed, but removes the superfluous "edge" and "node" levels in the dict
-
-factsheets: A class for working with factsheets
+```
+#factsheets: A class for working with factsheets
+```
 -create(name*,fstype*,attributes,validateOnly)-creates a factsheet. Attributes is a dict with key/value pairs for attribs like "/alias":"Alias to add". validateOnly defaults to "false", but you can send a create to only test.
 -update(fsid*,attributes*,comment*,validateOnly)
 -delete(fsid*,comment*,validateOnly)
@@ -20,7 +22,7 @@ factsheets: A class for working with factsheets
 -getByContainsName(name*) - Returns multiple factsheets that conain the string in name
 -getFactSheetByNameAndType(name*,fstype*) - returns a dict with Factsheet info by name and type - exact match only
 -getIdByNameAndType(name*,fstype*) - returns a single id as a string from query
-
+```
 TODO:
 ------
 LOTS!
