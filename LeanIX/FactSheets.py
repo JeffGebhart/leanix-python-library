@@ -129,13 +129,6 @@ class FactSheets:
         
 
         return self.lix.graph.execGraphQLTrimmed(gql,gvars)
-        
-
-                   
-
-
-
-
 
     def getByContainsName(self,name):
         """ Gets FactSheets by name, does a "contains" query of all factsheets """
@@ -181,3 +174,4 @@ class FactSheets:
             return fs['id']
         else:
             return None
+
