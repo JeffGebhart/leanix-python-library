@@ -48,7 +48,6 @@ class FactSheets:
         delfs = self.lix.graph.execGraphQLTrimmed(gql,gvars)
         return delfs
 
-
     def create(self,name,fstype,attributes={},validateOnly=False):
         """ Creates a fact sheet based on name and type, and applies the Key/Value pairs in attributes to it """
 

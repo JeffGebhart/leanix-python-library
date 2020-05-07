@@ -7,28 +7,5 @@ baseurl = os.getenv("leanixurl")
 
 lix = LeanIX.LeanIX(api_token=api_token,workspaceid=workspaceid,baseurl=baseurl)
 
-gql = """
-{
- allFactSheets(first:100)
-  {
-    totalCount
-    edges {
-      node {
-        id
-        type
-        category
-        name
-        displayName
-        fullName
-        description
-      }
-    }
-  }
-}"""
-
-fsid = lix.factsheets.getIdByNameAndType(name="Test Process",fstype="Process")
-
-result = lix.factsheets.update(fsid=fsid,comment="TestUpdate",attributes={"/alias":{"value":"TestAlias"}},validateOnly=False)
-fs = lix.factsheets.getFactSheetByNameAndType(name="Test Process",fstype="Process")
+u=lix.users.setPermission(email="jeff@gebhart.ca",role="ADMIN")
 a=1
-

@@ -23,6 +23,17 @@ LeanIX Class will do your authentication and token management.  It will return a
 -getFactSheetByNameAndType(name*,fstype*) - returns a dict with Factsheet info by name and type - exact match only
 -getIdByNameAndType(name*,fstype*) - returns a single id as a string from query
 ```
+
+#users:  A class for working with users
+```
+getUsers:  Gets all users into a list
+getUsersEmail:  Gets all users into a dict with a key of the user's e-mail address
+getUserByEmail: Gets a single user based on e-mail
+getUsersID:  Gets all users into a dict with a key of the user's Account ID (GUID)
+getUserByID: Gets a single user by ID
+setRole:  Sets a user's role by e-mail. Roles are ADMIN,MEMBER,VIEWER, and CONTACT
+
+```
 TODO:
 ------
 LOTS!
