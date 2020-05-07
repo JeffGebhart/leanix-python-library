@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
   long_description = fh.read()
 
 setuptools.setup(
-  name='leanix',
-  version='0.1',
+  name='leanix-py',
+  version='0.0.2',
   description='Functionality to support the development with LeanIX REST APIs',
   long_description=long_description,
   long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setuptools.setup(
     'Programming Language :: Python :: 3'
   ],
   #Packages that are included in the project
-  packages=[],
+  packages=["LeanIX"],
   #Package requirements that 
-  install_requires=['json','requests','base64','time']
+  install_requires=['requests']
 )
