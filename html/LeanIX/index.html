@@ -33,7 +33,12 @@ from .Users import Users
 
 class LeanIX:
     def __init__(self,api_token=&#34;&#34;,workspaceid=&#34;&#34;,baseurl=&#34;https://us.leanix.net/&#34;):
-        &#34;&#34;&#34; Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls &#34;&#34;&#34;
+        &#34;&#34;&#34; Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls 
+        Retuns a class with subclasses pointing to the other options:
+        .factsheets
+        .users
+        .graph
+        &#34;&#34;&#34;
         self.__api_token = api_token
         self.workspaceid = workspaceid
         self.baseurl = baseurl
@@ -112,14 +117,23 @@ class LeanIX:
 <span>(</span><span>api_token='', workspaceid='', baseurl='https://us.leanix.net/')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls</p></div>
+<div class="desc"><p>Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls
+Retuns a class with subclasses pointing to the other options:
+.factsheets
+.users
+.graph</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class LeanIX:
     def __init__(self,api_token=&#34;&#34;,workspaceid=&#34;&#34;,baseurl=&#34;https://us.leanix.net/&#34;):
-        &#34;&#34;&#34; Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls &#34;&#34;&#34;
+        &#34;&#34;&#34; Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls 
+        Retuns a class with subclasses pointing to the other options:
+        .factsheets
+        .users
+        .graph
+        &#34;&#34;&#34;
         self.__api_token = api_token
         self.workspaceid = workspaceid
         self.baseurl = baseurl

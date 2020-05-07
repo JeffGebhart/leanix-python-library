@@ -7,7 +7,12 @@ from .Users import Users
 
 class LeanIX:
     def __init__(self,api_token="",workspaceid="",baseurl="https://us.leanix.net/"):
-        """ Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls """
+        """ Authenticates to LeanIX with the given API Token and returns the Authorization header for use in future calls 
+        Retuns a class with subclasses pointing to the other options:
+        .factsheets
+        .users
+        .graph
+        """
         self.__api_token = api_token
         self.workspaceid = workspaceid
         self.baseurl = baseurl
