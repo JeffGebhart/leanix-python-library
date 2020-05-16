@@ -3,14 +3,32 @@ import json
 
 class FactSheets:
     def __init__(self,lix):
-        """ Pass in the parent LeanIX object to have access to all of the methods and data
+        """Base class for LeanIX Factsheet
+
+        Arguments:
+            lix LeaxIX Class -- instantiated from the overall class, receives the class for data passing
         """
         self.lix = lix
+        self.applications = Applications(self.lix)
+        self.providers = Providers(self.lix)
     
     def __repr__(self):
         return f"Factsheets wrapper for {self.lix}"
 
     def deleteByNameAndType(self,name,fstype,comment,validateOnly=False):
+        """Archives factsheet given the name and type
+
+        Arguments:
+            name {string} -- Fact Sheet Name
+            fstype {string} -- Fact Sheet Type
+            comment {string} -- Reason for deletion
+
+        Keyword Arguments:
+            validateOnly {bool} -- Set validateOnly flag on call for testing (default: {False})
+
+        Returns:
+            json -- Return status from delete request
+        """
         fsid = self.getIdByNameAndType(name,fstype)
         if fsid:
             return self.delete(fsid,comment,validateOnly)
@@ -174,3 +192,134 @@ class FactSheets:
         else:
             return None
 
+    def getTagIdByNameAndGroup(self,tagname,taggroup):
+        """Gets the TagID given the name and group.  For NoGroup, specify None as the taggroup
+
+        Arguments:
+        tagname string -- Name of tag
+        taggroup string -- Name of tag group"""
+
+
+        gql = """query ($tagfilter: TagQueryFilters!) {
+                    allTags(filter: $tagfilter) {
+                        edges {
+                        node {
+                            id
+                            name
+                            
+                            }
+                        }
+                    }
+                }"""
+
+        gvars = {
+                    "tagfilter": {
+                        "tagGroupName": taggroup,
+                        "nameSubstring": tagname
+                    }
+                }
+
+        results = self.lix.graph.execGraphQLTrimmed(gql,gvars)
+        for tag in results['data']['allTags']:
+            if tag['name'] == tagname:
+                return tag['id']
+
+    def addTagToFactsheet(self,fsid=None,fsname=None,fstype=None,tagname=None,taggroup=None,tagid=None,validateOnly=False):
+        """Adds the specified tag to the deisgnated factsheet
+
+        Keyword Arguments:
+        fsid (guid) -- Factsheet ID of the factsheet to add tag to.  Either fsid or fsname and fstype must be specified
+        fsname string -- Name of factsheet. Must also provide type
+        fstype string -- Factsheet type, used with name, not used if fsid specified
+        tagname string -- Name of Tag, used with taggroup, not used of tagid spefcified
+        taggroup string -- Tag Group, used with name, not used of tagid spefcified
+        tagid guid -- tagid to add
+        """
+
+        if not fsid:
+            """ if fsid not specified, look up the id based on name and group """
+            fsid = self.getIdByNameAndType(name=fsname,fstype=fstype)
+
+        if not tagid:
+            tagid = self.getTagIdByNameAndGroup(tagname,taggroup)
+
+        
+
+        gql = """mutation ($patches: [Patch]!, $fsid: ID!, $validate: Boolean!) {
+                    result: updateFactSheet(id: $fsid, patches: $patches, validateOnly: $validate) {
+                        factSheet {
+                        rev
+                        name
+                        tags {
+                            id
+                            name
+                            color
+                            description
+                            tagGroup {
+                            shortName
+                            name
+                            }
+                        }
+                        }
+                    }
+                    }"""
+        tagpatch = {
+            "tagId": tagid
+        }
+
+        gvars = {
+                    "patches": [
+                        {
+                            "op":"add",
+                            "path": "/tags",
+                            "value": [json.dumps(tagpatch)]
+                        }
+                    ],
+                    "fsid": fsid,
+                    "validate": validateOnly
+                }
+        
+        return self.lix.graph.execGraphQLTrimmed(gql,gvars)
+
+        a=1
+                                                
+
+class Applications:
+
+    def __init__(self,lix):
+        """Base class for LeanIX Applications, inheriting from FactSheets
+
+        Arguments:
+            lix LeaxIX Class -- instantiated from the overall class, receives the class for data passing
+        """
+        self.lix = lix
+        self.fstype = "Application"
+
+    def __repr__(self):
+        return f"Application wrapper for {self.lix}"
+
+    def delete(self,fsname):
+        """Archives the named Application Factsheet
+
+        Arguments:
+            fsname string
+        """
+
+        return self.lix.factsheets.deleteByNameAndType(name=fsname,type=self.fstype)
+
+    def getByName(self,name):
+        """Gets fact sheet by name
+
+        Arguments:
+            name {[type]} -- [description]
+        """
+        return self.lix.factsheets.getFactSheetByNameAndType(name=name,fstype=self.fstype)
+
+    def getIdByName(self,name):
+        return self.lix.factsheets.getIdByNameAndType(name=name, fstype=self.fstype)
+
+
+class Providers(Applications):
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="Provider"

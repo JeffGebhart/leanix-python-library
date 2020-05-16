@@ -68,3 +68,71 @@ class Graph:
 
         else:
             return results
+
+    def get_schema(self):
+        gql = """query {
+                            __schema {
+                                types {
+                                name
+                                kind
+                                interfaces {
+                                    kind
+                                    name
+                                }
+                                fields {
+                                    name
+                                }
+                                inputFields {
+                                    name
+                                    defaultValue
+                                }
+                                }
+                                queryType {
+                                name
+                                }
+                            }
+                            }"""
+
+        s = self.execGraphQLTrimmed(gql)
+        schema = {}
+        for i in s['data']['__schema']['types']:
+            schema[i['name'].lower()] = i
+        return schema
+
+    def getBasicGQL(self,fstype=None,fields=[]):
+        basegql = """query ($filter: FilterInput) 
+                        {
+                            allFactSheets(filter: $filter) 
+                            {
+                                totalCount
+                                edges 
+                                {
+                                    node {
+                                            id
+                                            displayName
+                                            name
+                                            type
+                                            status
+                                            ## morefields ##
+                                        }
+                                }
+                            }
+                        }"""
+        morefields = ""
+        fieldlist = ""
+        if fields:
+            for f in fields:
+                fieldlist += f"{f}\n"
+        
+        if fstype:
+            morefields += f"...on {fstype} "+"{"+f"\n{fieldlist}" + "}"
+            fullgql = basegql.replace("## morefields ##",morefields)
+        else:
+            fullgql = basegql.replace("## morefields ##",fieldlist)
+
+        return fullgql
+
+        
+
+        
+        

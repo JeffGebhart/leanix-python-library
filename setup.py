@@ -1,4 +1,8 @@
-import setuptools 
+import setuptools
+import pdoc 
+
+
+mods = ['LeanIX']
 
 with open("README.md", "r") as fh:
   long_description = fh.read()
@@ -19,7 +23,7 @@ setuptools.setup(
     'Programming Language :: Python :: 3'
   ],
   #Packages that are included in the project
-  packages=["LeanIX"],
+  packages=mods,
   #Package requirements that 
   install_requires=['requests']
 )
