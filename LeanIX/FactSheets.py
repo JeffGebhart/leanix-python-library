@@ -11,6 +11,18 @@ class FactSheets:
         self.lix = lix
         self.applications = Applications(self.lix)
         self.providers = Providers(self.lix)
+        self.factsheettypes = [
+                            'BusinessCapability',
+                            "Process",
+                            "UserGroup",
+                            "Project",
+                            "Application",
+                            "Interface",
+                            "DataObject",
+                            "ITComponent",
+                            "Provider",
+                            "TechnicalStack"
+                        ]
     
     def __repr__(self):
         return f"Factsheets wrapper for {self.lix}"

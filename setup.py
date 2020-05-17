@@ -1,5 +1,6 @@
 import setuptools
-import pdoc 
+#
+# import pdoc 
 
 
 mods = ['LeanIX']
@@ -9,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name='leanix-py',
-  version='0.0.2',
+  version='0.0.3',
   description='Functionality to support the development with LeanIX REST APIs',
   long_description=long_description,
   long_description_content_type="text/markdown",
