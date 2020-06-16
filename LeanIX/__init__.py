@@ -3,6 +3,7 @@ import json
 from .Graph import Graph
 from .FactSheets import FactSheets
 from .Users import Users
+from .Metrics import Metrics
 
 
 class LeanIX:
@@ -23,6 +24,7 @@ class LeanIX:
         self.graph = Graph(self)
         self.factsheets = FactSheets(self)
         self.users = Users(self)
+        self.metrics = Metrics(self)
 
     def __repr__(self):
         return f"LeanIX Object for {self.workspaceid}"

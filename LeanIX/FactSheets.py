@@ -11,6 +11,15 @@ class FactSheets:
         self.lix = lix
         self.applications = Applications(self.lix)
         self.providers = Providers(self.lix)
+        self.businesscapabilities = BusinessCapability(self.lix)
+        self.process = Process(self.lix)
+        self.usergroup = UserGroup(self.lix)
+        self.project = Project(self.lix)
+        self.interface = Interface(self.lix)
+        self.dataobject = DataObject(self.lix)
+        self.itcomponent = ITComponent(self.lix)
+        self.technicalstack = TechnicalStack(self.lix)
+        self.taggroups = {}
         self.factsheettypes = [
                             'BusinessCapability',
                             "Process",
@@ -159,6 +168,39 @@ class FactSheets:
 
         return self.lix.graph.execGraphQLTrimmed(gql,gvars)
 
+    def getall(self,fstype,attributes=""):
+        """ Gets FactSheets by type """
+
+        gquery = """query ($fstype: [String]!) {
+                    allFactSheets(filter: {facetFilters: [{facetKey: "FactSheetTypes", keys: $fstype}]}) {
+                        totalCount
+                        edges {
+                        node {
+                            ##ADDITIONALATTRIBS##
+                            id
+                            displayName
+                            name
+                            type
+                            status
+                            category
+                            tags {
+                            id
+                            name
+                            tagGroup{
+                                id
+                                name
+                            }
+                            }
+                        }
+                        }
+                    }
+                    }
+                        """.replace("##ADDITIONALATTRIBS##",attributes)
+                        
+        gvars = {"fstype":[fstype] }
+
+        return self.lix.graph.execGraphQLTrimmed(gquery,gvars)      
+
     def getByContainsName(self,name):
         """ Gets FactSheets by name, does a "contains" query of all factsheets """
 
@@ -235,8 +277,47 @@ class FactSheets:
         for tag in results['data']['allTags']:
             if tag['name'] == tagname:
                 return tag['id']
+    
+    def createTagInGroup(self,tagname,taggroup,validateOnly=False):
+        if not self.taggroups:
 
-    def addTagToFactsheet(self,fsid=None,fsname=None,fstype=None,tagname=None,taggroup=None,tagid=None,validateOnly=False):
+            gql="""{
+                        allTagGroups {
+                        edges {
+                        node {
+                            id
+                            name
+                        }
+                        }
+                    }
+                    }"""
+            taggroups = self.lix.graph.execGraphQLTrimmed(gql)
+            tglist = {}
+            for tg in taggroups['data']['allTagGroups']:
+                tglist[tg['name'].lower()] = tg
+            
+            self.taggroups = tglist
+        
+        tgid = self.taggroups[taggroup.lower()]['id']
+
+        gql2 = """mutation ($name: String!, $tgid: ID!, $validateOnly: Boolean!) {
+                    createTag(name: $name, tagGroupId: $tgid, validateOnly: $validateOnly) {
+                        id
+                        name
+                    }
+                    }"""
+        gvars2 = {
+            "name":tagname,
+            "tgid": tgid,
+            "validateOnly": validateOnly
+        }
+        return self.lix.graph.execGraphQLTrimmed(gql2,gvars2)['data']['createTag']['id']
+
+
+
+
+
+    def addTagToFactsheet(self,fsid=None,fsname=None,fstype=None,tagname=None,taggroup=None,tagid=None,addIfNotExist=True,validateOnly=False):
         """Adds the specified tag to the deisgnated factsheet
 
         Keyword Arguments:
@@ -246,6 +327,7 @@ class FactSheets:
         tagname string -- Name of Tag, used with taggroup, not used of tagid spefcified
         taggroup string -- Tag Group, used with name, not used of tagid spefcified
         tagid guid -- tagid to add
+        addIfNotExist boolean -- Whether to create tag in taggroup if it doesn't exist
         """
 
         if not fsid:
@@ -254,6 +336,11 @@ class FactSheets:
 
         if not tagid:
             tagid = self.getTagIdByNameAndGroup(tagname,taggroup)
+            if not tagid:   # No tag ID found
+                if addIfNotExist:       # Add tag to group if it doesn't exist
+                    tagid = self.createTagInGroup(tagname,taggroup)
+        
+
 
         
 
@@ -294,12 +381,32 @@ class FactSheets:
         return self.lix.graph.execGraphQLTrimmed(gql,gvars)
 
         a=1
-                                                
+
+    def addDocumentToFactsheet(self,fsid,url,docname="",description="",validateOnly=False)                                             :
+
+        gquery = """mutation ($fsid: ID!, $docname: String!, $url: String!,$desc: String!, $validateOnly: Boolean!){
+                            createDocument(factSheetId: $fsid, name: $docname, url: $url, description: $desc, validateOnly: $validateOnly) {
+                                id
+                                name
+                                description
+                                factSheetId
+                            }
+                            }"""
+        gqlvar = {
+            "fsid": fsid,
+            "docname": docname,
+            "url": url,
+            "desc": description,
+            "validateOnly": validateOnly
+        }
+
+        return self.lix.graph.execGraphQLTrimmed(gquery,gqlvar)
 
 class Applications:
 
     def __init__(self,lix):
         """Base class for LeanIX Applications, inheriting from FactSheets
+        Also acts as a base for all other fact sheet types
 
         Arguments:
             lix LeaxIX Class -- instantiated from the overall class, receives the class for data passing
@@ -319,6 +426,10 @@ class Applications:
 
         return self.lix.factsheets.deleteByNameAndType(name=fsname,type=self.fstype)
 
+    def getAll(self,attributes=""):
+        """ Get all fact sheets of the type """
+        return self.lix.factsheets.getall(fstype=self.fstype,attributes=attributes)
+
     def getByName(self,name):
         """Gets fact sheet by name
 
@@ -330,8 +441,74 @@ class Applications:
     def getIdByName(self,name):
         return self.lix.factsheets.getIdByNameAndType(name=name, fstype=self.fstype)
 
+    def create(self,name,attributes={},validateOnly=False):
+        """ Creates a new factsheet of the specified type """
+        # def create(self,name,fstype,attributes={},validateOnly=False):
+
+        return self.lix.factsheets.create(name=name,fstype=self.fstype,attributes=attributes,validateOnly=validateOnly)
 
 class Providers(Applications):
+
     def __init__(self,lix):
         super().__init__(lix)
         self.fstype="Provider"
+
+class BusinessCapability(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="BusinessCapability"
+
+class Process(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="Process"
+
+class Providers(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="Provider"
+
+class UserGroup(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="UserGroup"
+
+class Project(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="Project"
+
+class Interface(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="Interface"
+
+class DataObject(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="DataObject"
+
+class ITComponent(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="ITComponent"
+
+    def create(self,name,attributes={},validateOnly=False,category="Hardware"):
+        """ Special override to add the "Category" attribute to ITComponent adds """
+
+        attributes['/category'] = category
+        return self.lix.factsheets.create(name=name,fstype=self.fstype,attributes=attributes,validateOnly=validateOnly)
+
+class TechnicalStack(Applications):
+
+    def __init__(self,lix):
+        super().__init__(lix)
+        self.fstype="TechnicalStack"
