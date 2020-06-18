@@ -168,6 +168,33 @@ class FactSheets:
 
         return self.lix.graph.execGraphQLTrimmed(gql,gvars)
 
+    def getByID(self,fsid,attributes):
+        """ gets individual FS by id """
+        gquery = """query ($fsid: ID!) {
+                        factSheet(id: $fsid) {
+                            ##ADDITIONALATTRIBS##
+                            id
+                            displayName
+                            name
+                            type
+                            status
+                            category
+                            tags {
+                            id
+                            name
+                            tagGroup {
+                                id
+                                name
+                            }
+                            }
+                        }
+                        }
+                                        """.replace("##ADDITIONALATTRIBS##",attributes)
+        gvars = {
+            "fsid": fsid
+        }
+        return self.lix.graph.execGraphQLTrimmed(gquery,gvars)    
+
     def getall(self,fstype,attributes=""):
         """ Gets FactSheets by type """
 
@@ -312,12 +339,12 @@ class FactSheets:
             "validateOnly": validateOnly
         }
         return self.lix.graph.execGraphQLTrimmed(gql2,gvars2)['data']['createTag']['id']
+        
 
 
 
 
-
-    def addTagToFactsheet(self,fsid=None,fsname=None,fstype=None,tagname=None,taggroup=None,tagid=None,addIfNotExist=True,validateOnly=False):
+    def addTagToFactsheet(self,fsid=None,fsname=None,fstype=None,tagname=None,taggroup=None,tagid=None,addIfNotExist=True,validateOnly=False,replaceIfExists=True):
         """Adds the specified tag to the deisgnated factsheet
 
         Keyword Arguments:
@@ -378,7 +405,41 @@ class FactSheets:
                     "validate": validateOnly
                 }
         
-        return self.lix.graph.execGraphQLTrimmed(gql,gvars)
+        result = self.lix.graph.execGraphQLTrimmed(gql,gvars)
+        if replaceIfExists:
+            if result['errors']:
+                if result['errors'][0]['errorType'] == 'CONSTRAINT_VIOLATION':
+                    # Tag exists already, need to remove it and readd
+                    fs = self.getByID(fsid,"")
+                    taglist = []
+                    for t in fs['data']['factSheet']['tags']:
+                        if t['tagGroup']['name'].lower() == taggroup.lower():   # The one to replace
+                            taglist.append({
+                                "tagId": tagid
+
+                            })
+                        else:                                                      # Other tags, just retain them
+                            taglist.append({
+                                "tagId": t['id']
+                            })
+                    
+                    gvars['patches'] = [
+                        {
+                            "op": "replace",
+                            "path":"/tags",
+                            "value": json.dumps(taglist)
+                        }
+                    ]
+                    result = self.lix.graph.execGraphQLTrimmed(gql,gvars)
+                    
+
+
+
+
+
+                    aaa=1
+        return result
+
 
         a=1
 
@@ -401,6 +462,83 @@ class FactSheets:
         }
 
         return self.lix.graph.execGraphQLTrimmed(gquery,gqlvar)
+
+    def addSubscription(fsid,email,rolename,roletype):
+        gvars = {
+                    "fsid": fsid,
+                    "user": {
+                        "email":email
+                    },
+                    "role": [
+                        getIDforRole(roleName)
+                    ],
+                    "subtype": roletype
+        }
+        roletype = roletype.upper()
+        gql = """mutation ($fsid: ID!,
+                        $user: UserInput!,
+                            $role: [ID!],$subtype: String!) {
+                        createSubscription(factSheetId: $fsid, 
+                                user: $user, 
+                                type: $subtype, 
+                                validateOnly: false, 
+                                roleIds: $role) 
+                        {
+                            id
+                        }
+
+                        }"""
+
+        subadd = return self.lix.graph.execGraphQLTrimmed(gql,gqlvars)
+
+        pass
+
+
+    def addSubscriberToFactsheet(self,fsid=None,fsname=None,fstype=None,subscriber="",role=""):
+        """Adds a subscriber to a factsheet """
+        if not fsid:
+            """ if fsid not specified, look up the id based on name and group """
+            fsid = self.getIdByNameAndType(name=fsname,fstype=fstype)
+
+        subs = """    subscriptions {
+                            edges {
+                                node {
+                                id
+                                user {
+                                    email
+                                    id
+                                }
+                                roles{
+                                    id
+                                    name
+                                }
+                                }
+                            }
+                            }
+                            """
+
+        fs = self.getByID(fsid,subs)['data']['factSheet']
+        
+        if not fs['subscriptions']:     # No subs, no need to check
+            pass
+
+        else:
+            foundsub = False
+            for sub in fs['subscriptions']:
+                if sub['user']['email'].lower() == subscriber.lower():
+                    foundsub = True
+                    for rol in sub['roles']:
+                        if not rol['name'].lower() == role.lower():
+
+
+
+
+        aa=1
+
+
+
+
+
 
 class Applications:
 
