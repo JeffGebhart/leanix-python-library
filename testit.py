@@ -8,8 +8,3 @@ workspaceid = os.getenv("leanixworkspaceid")
 baseurl = os.getenv("leanixurl")
 
 lix = LeanIX.LeanIX(api_token=api_token,workspaceid=workspaceid,baseurl=baseurl)
-
-polls = lix.polls.getPolls()
-
-
-a=1
