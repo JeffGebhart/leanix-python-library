@@ -22,6 +22,7 @@ LeanIX Class will do your authentication and token management.  It will return a
 -getByContainsName(name*) - Returns multiple factsheets that conain the string in name
 -getFactSheetByNameAndType(name*,fstype*) - returns a dict with Factsheet info by name and type - exact match only
 -getIdByNameAndType(name*,fstype*) - returns a single id as a string from query
+-getAllByType(fstype*) - returns all factsheets of a specific type
 ```
 
 #users:  A class for working with users

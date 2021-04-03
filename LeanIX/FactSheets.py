@@ -186,6 +186,31 @@ class FactSheets:
 
         return self.lix.graph.execGraphQLTrimmed(gquery,gvars)
 
+    def getAllByType(self,fstype):
+        """ Gets FactSheets by type """
+
+        gquery = """query ($typename: FactSheetType!) {
+                    allFactSheets(factSheetType: $typename) {
+                        totalCount
+                        edges {
+                        node {
+                            id
+                            displayName
+                            name
+                            type
+                            status
+                        }
+                        }
+                    }
+                    }        
+        """
+                        
+        gvars = {
+            "typename": fstype
+        }
+
+        return self.lix.graph.execGraphQLTrimmed(gquery,gvars)
+
     def getFactSheetByNameAndType(self,name,fstype):
         """ Returns the factsheet given a type and name """
         factsheets = self.getByContainsName(name)['data']['allFactSheets']
