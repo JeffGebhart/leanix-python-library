@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name='leanix-py',
-  version='0.0.6',
+  version='0.0.7',
   description='Functionality to support the development with LeanIX REST APIs',
   long_description=long_description,
   long_description_content_type="text/markdown",
