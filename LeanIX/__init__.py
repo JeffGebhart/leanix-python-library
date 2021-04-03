@@ -4,6 +4,7 @@ from .Graph import Graph
 from .FactSheets import FactSheets
 from .Users import Users
 from .Metrics import Metrics
+from .Polls import Polls
 
 
 class LeanIX:
@@ -25,6 +26,7 @@ class LeanIX:
         self.factsheets = FactSheets(self)
         self.users = Users(self)
         self.metrics = Metrics(self)
+        self.polls = Polls(self)
 
     def __repr__(self):
         return f"LeanIX Object for {self.workspaceid}"

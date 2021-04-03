@@ -514,56 +514,46 @@ class FactSheets:
 
                         }"""
 
-        subadd = return self.lix.graph.execGraphQLTrimmed(gql,gqlvars)
+        return self.lix.graph.execGraphQLTrimmed(gql,gqlvars)
 
         pass
 
 
-    def addSubscriberToFactsheet(self,fsid=None,fsname=None,fstype=None,subscriber="",role=""):
-        """Adds a subscriber to a factsheet """
-        if not fsid:
-            """ if fsid not specified, look up the id based on name and group """
-            fsid = self.getIdByNameAndType(name=fsname,fstype=fstype)
+    # def addSubscriberToFactsheet(self,fsid=None,fsname=None,fstype=None,subscriber="",role=""):
+    #     """Adds a subscriber to a factsheet """
+    #     if not fsid:
+    #         """ if fsid not specified, look up the id based on name and group """
+    #         fsid = self.getIdByNameAndType(name=fsname,fstype=fstype)
 
-        subs = """    subscriptions {
-                            edges {
-                                node {
-                                id
-                                user {
-                                    email
-                                    id
-                                }
-                                roles{
-                                    id
-                                    name
-                                }
-                                }
-                            }
-                            }
-                            """
+    #     subs = """    subscriptions {
+    #                         edges {
+    #                             node {
+    #                             id
+    #                             user {
+    #                                 email
+    #                                 id
+    #                             }
+    #                             roles{
+    #                                 id
+    #                                 name
+    #                             }
+    #                             }
+    #                         }
+    #                         }
+    #                         """
 
-        fs = self.getByID(fsid,subs)['data']['factSheet']
+    #     fs = self.getByID(fsid,subs)['data']['factSheet']
         
-        if not fs['subscriptions']:     # No subs, no need to check
-            pass
+    #     if not fs['subscriptions']:     # No subs, no need to check
+    #         pass
 
-        else:
-            foundsub = False
-            for sub in fs['subscriptions']:
-                if sub['user']['email'].lower() == subscriber.lower():
-                    foundsub = True
-                    for rol in sub['roles']:
-                        if not rol['name'].lower() == role.lower():
-
-
-
-
-        aa=1
-
-
-
-
-
+    #     else:
+    #         foundsub = False
+    #         for sub in fs['subscriptions']:
+    #             if sub['user']['email'].lower() == subscriber.lower():
+    #                 foundsub = True
+    #                 for rol in sub['roles']:
+    #                     if not rol['name'].lower() == role.lower():
 
 class Applications:
 
