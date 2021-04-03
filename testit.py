@@ -9,7 +9,6 @@ baseurl = os.getenv("leanixurl")
 
 lix = LeanIX.LeanIX(api_token=api_token,workspaceid=workspaceid,baseurl=baseurl)
 
-apps = lix.factsheets.itcomponent.getAll()
-
-newitc = lix.factsheets.itcomponent.create("NewITComponent",category="service")
+allitc = lix.factsheets.getAllByType("ITComponent")
+someitc = lix.factsheets.getByContainsName("a")
 a=1
