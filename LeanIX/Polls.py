@@ -10,6 +10,7 @@ class Polls:
     def __init__(self,lix):
         self.auth_header = lix._auth_header
         self.lix = lix
+        self.allpolls=self.getPolls()
 
     def startPollRun(self,pollrun):
         apiendpoint = "services/poll/v2/pollRuns?type=LIVE"
@@ -49,11 +50,21 @@ class Polls:
         else:
             return requests.get(url,headers=self.lix.header).json()
 
+    def getPollRunResults(self,pollrunid):
+        apiendpoint = f"services/poll/v2/pollRuns/{pollrunid}/pollResults"
+        url = self.lix.baseurl+ apiendpoint
+        results = requests.get(url,headers=self.lix.header).json()        
+        
+        return results        
+        a=1
 
     def getPollRuns(self,pollid):
         apiendpoint = f"services/poll/v2/polls/{pollid}/pollRuns"
         url = self.lix.baseurl+ apiendpoint
-        return requests.get(url,headers=self.lix.header).json()        
+        results = requests.get(url,headers=self.lix.header).json()
+        for r in results['data']:
+            r['pollResults'] = self.getPollRunResults(r['id'])['data']
+        return results       
         a=1
 
     def getPollRunReminders(self,pollrunid):
